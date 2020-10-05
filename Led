@@ -1,0 +1,70 @@
+;*******************
+;*                                                     *
+;*    MICROPROCESADORES, MICROCONTROLADORES E INTERFAZ *
+;*                                                     *
+;*           FECHA: 05 DE OCTUBRE DEL 2020             *
+;*                                                     *
+;*         ALUMNO: HERNANDEZ MENDOZA JOSE ANGEL        *
+;*                                                     *
+;*          PROGRAMA: LED OSCILANTE                    *
+;*          PARA: MICRCONTROLADOR PIC16F887            *
+;*          ENSAMBLADO EN: MPLAB PARA WINDOWS          *
+;*******************
+
+    PROCESSOR 16F887
+#include <xc.inc>
+;CONFIG word1
+CONFIG FOSC = INTRC_NOCLKOUT
+CONFIG WDTE = OFF
+CONFIG PWRTE = ON
+CONFIG MCLRE = OFF
+CONFIG CP = OFF
+CONFIG CPD = OFF
+CONFIG BOREN = OFF
+CONFIG IESO = OFF
+CONFIG FCMEN = ON
+CONFIG DEBUG = ON
+;CONFIG word2
+CONFIG BOR4V=BOR40V
+CONFIG WRT = OFF
+PSECT udata
+P1:
+    DS 1
+P2:
+    DS 1
+P3:
+    DS 1
+PSECT resetVec,class=CODE,delta=2
+resetVec:
+PAGESEL main
+goto main
+PSECT code
+main:
+BANKSEL ANSELH
+CLRF ANSELH
+BANKSEL TRISB
+MOVLW 0b00000000
+MOVWF TRISB
+BANKSEL PORTB
+CLRF PORTB
+BANKSEL OSCCON
+MOVLW  0b01110000
+MOVWF  OSCCON
+INICIO:
+bcf STATUS,5
+bcf STATUS,6
+bcf STATUS,0
+MOVLW  00000001B
+MOVWF  PORTB
+GOTO INC_IZQUIERDA
+INC_IZQUIERDA:
+RLF PORTB
+BTFSS PORTB,7
+GOTO INC_IZQUIERDA
+GOTO INC_DERECHA 
+INC_DERECHA:
+RRF PORTB
+BTFSS PORTB,0
+GOTO INC_DERECHA
+GOTO INC_IZQUIERDA
+END
